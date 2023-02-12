@@ -1,7 +1,7 @@
 function edit(id) {
   document.querySelector(`#editArea${id}`).style.display = 'block';
   document.querySelector(`#editButton${id}`).style.display = 'block';
-
+  document.querySelector(`#editArea${id}`).innerHTML = document.querySelector(`#post-${id}`).innerHTML;
   document.querySelector(`#editButton${id}`).addEventListener('click', () => {
     fetch(`/edit/${id}`, {
       method: 'PUT',
@@ -20,30 +20,26 @@ function edit(id) {
 }
 
 function like (id) {
-  let liked = false;
   button = document.querySelector(`#btn${id}`);
   likeButton = document.querySelector(`#likeButton${id}`);
-  button.style.backGroundColor = 'white';
   likedNumber = document.querySelector(`#likedNumber${id}`);
-  likeButton.addEventListener('click', () => {
-    if (button.style.backgroundColor == 'white') {
-      likedNumber.innerHTML = parseInt(likedNumber.innerHTML) - 1;
+    if (button.style.backgroundColor == 'red'){
+      button.style.backgroundColor = 'rgb(221, 221, 221)';
+      fetch(`/like/${id}`, {
+        method: 'POST',
+        body: JSON.stringify({
+          liked : false,
+        })        
+    })
+    likedNumber.innerHTML = parseInt(likedNumber.innerHTML) - 1;    
+    } else {
       button.style.backgroundColor = 'red';
       fetch(`/like/${id}`, {
-        method: 'PUT',
+        method: 'POST',
         body: JSON.stringify({
           liked : true,
         })
     })
-    } else {
-      button.style.backgroundColor = 'white';
-      likedNumber.innerHTML = parseInt(likedNumber.innerHTML) + 1, "Like";
-      fetch(`/like/${id}`, {
-        method: 'PUT',
-        body: JSON.stringify({
-          liked : false,
-        })
-    })
-  }
-  });
+      likedNumber.innerHTML = parseInt(likedNumber.innerHTML) + 1;
+    }
 }

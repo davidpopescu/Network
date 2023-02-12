@@ -93,9 +93,12 @@ def following(request):
     posts = Post.objects.filter(user__in=profile.following.all()).order_by("-timestamp")
     paginator = Paginator(posts, 10)
     page_number = request.GET.get('page')
-    return render(request, "network/following.html", {
-        "posts": paginator.get_page(page_number)
-    })
+    if profile.following.count() > 0:
+        return render(request, "network/following.html", {
+            "posts": paginator.get_page(page_number)
+        })
+    else:
+        return HttpResponseRedirect(reverse("index"))
 
 def profile(request, id):
     user = User.objects.get(id=id)
@@ -149,11 +152,11 @@ def edit(request, id):
 @csrf_exempt
 def like(request, id):
     post = Post.objects.get(id=id)
-    if request.method == "PUT":
+    if request.method == "POST":
         data = json.loads(request.body)
         print(data)
         if data.get("liked") is not None:
-            if data.get("liked") is True or post.likesNumber == 0: 
+            if data.get("liked") is True: 
                 post.likesNumber = post.likesNumber + 1
                 post.save()
             else:
